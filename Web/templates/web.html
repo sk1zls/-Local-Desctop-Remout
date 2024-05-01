@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Боковое меню</title>
+    <style>
+        /* CSS styles */
+        
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .side-menu {
+            background: #333;
+            color: white;
+            width: 200px;
+            height: 100vh;
+        }
+        
+        .menu-item {
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .menu-item:hover {
+            background: #555;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        #KeyTab {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+        }
+        
+        button {
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            background: #333;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="side-menu">
+        <div class="menu-item" onclick="navigateToPage('managementPage')">Управление</div>
+        <div class="menu-item" onclick="navigateToPage('programsPage')">Программы</div>
+        <div class="menu-item" onclick="navigateToPage('keysPage')">Клавиши</div>
+    </div>
+
+    <div class="content" id="managementPage" style="display: none;">
+        <h1>Добро пожаловать на страницу Управления</h1>
+        <main id="УправлениеTab">
+            <button onclick="sendCommand('play')">Play</button>
+            <button onclick="sendCommand('pause')">Pause</button>
+            <button onclick="sendCommand('next')">Next</button>
+            <button onclick="sendCommand('prev')">Previous</button>
+            <button onclick="sendCommand('volup')">Volume Up</button>
+            <button onclick="sendCommand('voldown')">Volume Down</button>
+        </main>
+    </div>
+
+    <div class="content" id="programsPage" style="display: none;">
+        <h1>Добро пожаловать на страницу Программ</h1>
+        <main id="ПрограммыTab">
+            <button onclick="sendCommand('custom1')">Custom 1</button>
+            <button onclick="sendCommand('custom2')">Custom 2</button>
+            <button onclick="sendCommand('custom3')">Custom 3</button>
+            <button onclick="sendCommand('custom4')">Custom 4</button>
+            <button onclick="sendCommand('custom5')">Custom 5</button>
+            <button onclick="sendCommand('custom6')">Custom 6</button>
+            <button onclick="sendCommand('custom7')">Custom 7</button>
+            <button onclick="sendCommand('custom8')">Custom 8</button>
+            <button onclick="sendCommand('custom9')">Custom 9</button>
+        </main>
+    </div>
+
+    <div class="content" id="keysPage" style="display: none;">
+        <h1>Добро пожаловать на страницу Клавиш</h1>
+        <main id="KeyTab">
+            <button onclick="sendKeyCommand('Key1')">Key 1</button>
+            <button onclick="sendKeyCommand('Key2')">Key 2</button>
+            <button onclick="sendKeyCommand('Key3')">Key 3</button>
+            <button onclick="sendKeyCommand('Key4')">Key 4</button>
+            <button onclick="sendKeyCommand('Key5')">Key 5</button>
+            <button onclick="sendKeyCommand('Key6')">Key 6</button>
+            <button onclick="sendKeyCommand('Key7')">Key 7</button>
+            <button onclick="sendKeyCommand('Key8')">Key 8</button>
+            <button onclick="sendKeyCommand('Key9')">Key 9</button>
+        </main>
+    </div>
+
+    <script>
+        function sendCommand(command) {
+            console.log(`Sending command: ${command}`);
+
+            const url = `/command/${command}`; // URL to send the command to the server
+            const xhr = new XMLHttpRequest();
+
+            xhr.open('GET', url);
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        console.log(`Command '${command}' successfully sent.`);
+                    } else {
+                        console.error(`Error sending command '${command}'. Status: ${xhr.status}`);
+                    }
+                }
+            };
+
+            xhr.send();
+        }
+
+        function navigateToPage(pageId) {
+            const pages = document.querySelectorAll('.content');
+            pages.forEach(page => {
+                if (page.id === pageId) {
+                    page.style.display = 'block';
+                } else {
+                    page.style.display = 'none';
+                }
+            });
+        }
+
+        function sendKeyCommand(key) {
+            console.log(`Sending key command: ${key}`);
+
+            fetch(`/key/${key}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    key_number: key.substring(3) // Extract the key number from 'Key1'
+                })
+            }).then(response => {
+                if (response.ok) {
+                    console.log(`Key command '${key}' successfully sent.`);
+                } else {
+                    console.error(`Error sending key command '${key}'. Status: ${response.status}`);
+                }
+            }).catch(error => {
+                console.error('Error sending key command:', error);
+            });
+        }
+    </script>
+</body>
+
+</html>
